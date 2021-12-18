@@ -17,6 +17,7 @@ import {
   getCandyMachineState,
   mintMultipleTokens,
   shortenAddress,
+  sleep,
 } from "./candy-machine";
 
 import access from "./access.json";
@@ -205,6 +206,7 @@ const Home = (props: HomeProps) => {
         setBalance(balance / LAMPORTS_PER_SOL);
       }
       setIsMinting(false);
+      await sleep(500);
       refreshCandyMachineState();
     }
   };
