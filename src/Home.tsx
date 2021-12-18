@@ -173,7 +173,7 @@ const Home = (props: HomeProps) => {
         if (failure > 0) {
           setAlertState({
             open: true,
-            message: `Failed to mint ${failure} tokens! Please try again!`,
+            message: `Failed to mint ${failure} tokens! Please check your wallet before trying again!`,
             severity: "error",
           });
         }
@@ -181,7 +181,7 @@ const Home = (props: HomeProps) => {
     } catch (error: any) {
       // TODO: blech:
       console.log(error);
-      let message = error.msg || "Minting failed! Please try again!";
+      let message = error.msg || "Timed out! Please check your wallet before trying again!";
       let code = error?.err?.InstructionError[1]?.Custom;
       console.log({code})
       if (code === 0x137) message = `SOLD OUT!`;
