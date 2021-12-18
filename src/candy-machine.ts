@@ -1,10 +1,6 @@
 import * as anchor from "@project-serum/anchor";
 
-import {
-  MintLayout,
-  TOKEN_PROGRAM_ID,
-  Token,
-} from "@solana/spl-token";
+import { MintLayout, TOKEN_PROGRAM_ID, Token } from "@solana/spl-token";
 
 export const CANDY_MACHINE_PROGRAM = new anchor.web3.PublicKey(
   "cndyAnrLdpjq1Ssp1z8xxDsB8dxe7u4HL5Nxi2K5WXZ"
@@ -19,7 +15,7 @@ const TOKEN_METADATA_PROGRAM_ID = new anchor.web3.PublicKey(
 );
 
 export interface CandyMachine {
-  id: anchor.web3.PublicKey,
+  id: anchor.web3.PublicKey;
   connection: anchor.web3.Connection;
   program: anchor.Program;
 }
@@ -29,8 +25,65 @@ interface CandyMachineState {
   itemsAvailable: number;
   itemsRedeemed: number;
   itemsRemaining: number;
-  goLiveDate: Date,
+  goLiveDate: Date;
 }
+
+export const getCandyMachineMints = async (
+  connection: anchor.web3.Connection,
+  candyMachineId: anchor.web3.PublicKey
+): Promise<anchor.web3.PublicKey[]> => {
+  let response = await connection.getProgramAccounts(
+    new anchor.web3.PublicKey("metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"),
+    {
+      dataSlice: { offset: 33, length: 32 },
+      filters: [
+        {
+          memcmp: {
+            offset: 326,
+            bytes: candyMachineId.toBase58(),
+          },
+        },
+      ],
+    }
+  );
+
+  return response.map(
+    ({ account: { data } }) => new anchor.web3.PublicKey(data)
+  );
+};
+
+export const getMintedFromCandyMachine = async (
+  connection: anchor.web3.Connection,
+  candyMachineId: anchor.web3.PublicKey,
+  publicKey: anchor.web3.PublicKey
+): Promise<anchor.web3.PublicKey[]> => {
+  const allMintsCandyMachine = await getCandyMachineMints(
+    connection,
+    candyMachineId
+  );
+  const tokenAccounts = await connection.getParsedTokenAccountsByOwner(
+    publicKey,
+    {
+      programId: TOKEN_PROGRAM_ID,
+    }
+  );
+
+  const ownerTokens = [];
+  for (let index = 0; index < tokenAccounts.value.length; index++) {
+    const tokenAccount = tokenAccounts.value[index];
+    const tokenAmount = tokenAccount.account.data.parsed.info.tokenAmount;
+    const tokenMint = tokenAccount.account.data.parsed.info.mint;
+
+    if (
+      tokenAmount.amount === "1" &&
+      tokenAmount.decimals === "0" &&
+      allMintsCandyMachine.includes(tokenMint)
+    )
+      ownerTokens.push(tokenMint);
+  }
+
+  return ownerTokens;
+};
 
 export const awaitTransactionSignatureConfirmation = async (
   txid: anchor.web3.TransactionSignature,
@@ -119,7 +172,7 @@ export const awaitTransactionSignatureConfirmation = async (
   done = true;
   console.log("Returning status", status);
   return status;
-}
+};
 
 /* export */ const createAssociatedTokenAccountInstruction = (
   associatedTokenAddress: anchor.web3.PublicKey,
@@ -149,28 +202,25 @@ export const awaitTransactionSignatureConfirmation = async (
     programId: SPL_ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID,
     data: Buffer.from([]),
   });
-}
+};
 
 export const getCandyMachineState = async (
   anchorWallet: anchor.Wallet,
   candyMachineId: anchor.web3.PublicKey,
-  connection: anchor.web3.Connection,
+  connection: anchor.web3.Connection
 ): Promise<CandyMachineState> => {
   const provider = new anchor.Provider(connection, anchorWallet, {
     preflightCommitment: "recent",
   });
 
-  const idl = await anchor.Program.fetchIdl(
-    CANDY_MACHINE_PROGRAM,
-    provider
-  );
+  const idl = await anchor.Program.fetchIdl(CANDY_MACHINE_PROGRAM, provider);
 
   const program = new anchor.Program(idl, CANDY_MACHINE_PROGRAM, provider);
   const candyMachine = {
     id: candyMachineId,
     connection,
     program,
-  }
+  };
 
   const state: any = await program.account.candyMachine.fetch(candyMachineId);
 
@@ -186,7 +236,7 @@ export const getCandyMachineState = async (
     itemsRedeemed,
     itemsRemaining,
     goLiveDate,
-  })
+  });
 
   return {
     candyMachine,
@@ -195,7 +245,7 @@ export const getCandyMachineState = async (
     itemsRemaining,
     goLiveDate,
   };
-}
+};
 
 const getMasterEdition = async (
   mint: anchor.web3.PublicKey
@@ -240,41 +290,24 @@ const getTokenWallet = async (
   )[0];
 };
 
-export const mintOneToken = async (
-  candyMachine: CandyMachine,
-  config: anchor.web3.PublicKey, // feels like this should be part of candyMachine?
+export const mintMultipleTokens = async (
+  candyMachine: any,
+  config: anchor.web3.PublicKey,
   payer: anchor.web3.PublicKey,
   treasury: anchor.web3.PublicKey,
-): Promise<string> => {
-  const mint = anchor.web3.Keypair.generate();
-  const token = await getTokenWallet(payer, mint.publicKey);
-  const { connection, program } = candyMachine;
-  const metadata = await getMetadata(mint.publicKey);
-  const masterEdition = await getMasterEdition(mint.publicKey);
+  quantity: number = 1
+) => {
+  const signersMatrix = [];
+  const instructionsMatrix = [];
 
-  const rent = await connection.getMinimumBalanceForRentExemption(
-    MintLayout.span
-  );
-
-  return await program.rpc.mintNft({
-    accounts: {
-      config,
-      candyMachine: candyMachine.id,
-      payer: payer,
-      wallet: treasury,
-      mint: mint.publicKey,
-      metadata,
-      masterEdition,
-      mintAuthority: payer,
-      updateAuthority: payer,
-      tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
-      tokenProgram: TOKEN_PROGRAM_ID,
-      systemProgram: anchor.web3.SystemProgram.programId,
-      rent: anchor.web3.SYSVAR_RENT_PUBKEY,
-      clock: anchor.web3.SYSVAR_CLOCK_PUBKEY,
-    },
-    signers: [mint],
-    instructions: [
+  for (let index = 0; index < quantity; index++) {
+    const mint = anchor.web3.Keypair.generate();
+    const token = await getTokenWallet(payer, mint.publicKey);
+    const { connection } = candyMachine;
+    const rent = await connection.getMinimumBalanceForRentExemption(
+      MintLayout.span
+    );
+    const instructions = [
       anchor.web3.SystemProgram.createAccount({
         fromPubkey: payer,
         newAccountPubkey: mint.publicKey,
@@ -303,9 +336,178 @@ export const mintOneToken = async (
         [],
         1
       ),
-    ],
-  });
+    ];
+    const masterEdition = await getMasterEdition(mint.publicKey);
+    const metadata = await getMetadata(mint.publicKey);
+
+    instructions.push(
+      await candyMachine.program.instruction.mintNft({
+        accounts: {
+          config,
+          candyMachine: candyMachine.id,
+          payer: payer,
+          wallet: treasury,
+          mint: mint.publicKey,
+          metadata,
+          masterEdition,
+          mintAuthority: payer,
+          updateAuthority: payer,
+          tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
+          tokenProgram: TOKEN_PROGRAM_ID,
+          systemProgram: anchor.web3.SystemProgram.programId,
+          rent: anchor.web3.SYSVAR_RENT_PUBKEY,
+          clock: anchor.web3.SYSVAR_CLOCK_PUBKEY,
+        },
+      })
+    );
+    const signers: anchor.web3.Keypair[] = [mint];
+
+    signersMatrix.push(signers);
+    instructionsMatrix.push(instructions);
+  }
+
+  return await sendTransactions(
+    candyMachine.program.provider.connection,
+    candyMachine.program.provider.wallet,
+    instructionsMatrix,
+    signersMatrix
+  );
+};
+
+export const sendTransactions = async (
+  connection: anchor.web3.Connection,
+  wallet: any,
+  instructionSet: anchor.web3.TransactionInstruction[][],
+  signersSet: anchor.web3.Keypair[][]
+): Promise<string[]> => {
+  if (!wallet.publicKey) throw new Error();
+
+  const unsignedTxns: anchor.web3.Transaction[] = [];
+  const block = await connection.getRecentBlockhash("singleGossip");
+
+  for (let i = 0; i < instructionSet.length; i++) {
+    const instructions = instructionSet[i];
+    const signers = signersSet[i];
+
+    if (instructions.length === 0) {
+      continue;
+    }
+
+    let transaction = new anchor.web3.Transaction();
+    instructions.forEach((instruction) => transaction.add(instruction));
+    transaction.recentBlockhash = block.blockhash;
+    transaction.setSigners(
+      // fee payed by the wallet owner
+      wallet.publicKey,
+      ...signers.map((s) => s.publicKey)
+    );
+
+    if (signers.length > 0) {
+      transaction.partialSign(...signers);
+    }
+
+    unsignedTxns.push(transaction);
+  }
+
+  const signedTxns = await wallet.signAllTransactions(unsignedTxns);
+
+  const pendingTxns: Promise<{ txid: string; slot: number }>[] = [];
+
+  console.log(
+    "Signed txns length",
+    signedTxns.length,
+    "vs handed in length",
+    instructionSet.length
+  );
+
+  const txIds = [];
+  for (let i = 0; i < signedTxns.length; i++) {
+    const signedTxnPromise = sendSignedTransaction({
+      connection,
+      signedTransaction: signedTxns[i],
+    });
+
+    try {
+      const { txid } = await signedTxnPromise;
+      txIds.push(txid);
+    } catch (error) {
+      console.error(error);
+    }
+
+    pendingTxns.push(signedTxnPromise);
+  }
+
+  await Promise.all(pendingTxns);
+
+  return txIds;
+};
+
+export async function sendSignedTransaction({
+  signedTransaction,
+  connection,
+  timeout = 60000,
+}: {
+  signedTransaction: anchor.web3.Transaction;
+  connection: anchor.web3.Connection;
+  sendingMessage?: string;
+  sentMessage?: string;
+  successMessage?: string;
+  timeout?: number;
+}): Promise<{ txid: string; slot: number }> {
+  const rawTransaction = signedTransaction.serialize();
+  const startTime = getUnixTs();
+  let slot = 0;
+  const txid: anchor.web3.TransactionSignature =
+    await connection.sendRawTransaction(rawTransaction, {
+      skipPreflight: true,
+    });
+
+  console.log("Started awaiting confirmation for", txid);
+
+  let done = false;
+  (async () => {
+    while (!done && getUnixTs() - startTime < timeout) {
+      connection.sendRawTransaction(rawTransaction, {
+        skipPreflight: true,
+      });
+      await sleep(500);
+    }
+  })();
+  try {
+    const confirmation = await awaitTransactionSignatureConfirmation(
+      txid,
+      timeout,
+      connection,
+      "recent",
+      true
+    );
+
+    if (!confirmation)
+      throw new Error("Timed out awaiting confirmation on transaction");
+
+    if (confirmation.err) {
+      console.error(confirmation.err);
+      throw new Error("Transaction failed: Custom instruction error");
+    }
+
+    slot = confirmation?.slot || 0;
+  } catch (err: any) {
+    console.error("Timeout Error caught", err);
+    if (err.timeout) {
+      throw new Error("Timed out awaiting confirmation on transaction");
+    }
+    throw err;
+  } finally {
+    done = true;
+  }
+
+  console.log("Latency", txid, getUnixTs() - startTime);
+  return { txid, slot };
 }
+
+export const getUnixTs = () => {
+  return new Date().getTime() / 1000;
+};
 
 export const shortenAddress = (address: string, chars = 4): string => {
   return `${address.slice(0, chars)}...${address.slice(-chars)}`;
@@ -313,4 +515,4 @@ export const shortenAddress = (address: string, chars = 4): string => {
 
 const sleep = (ms: number): Promise<void> => {
   return new Promise((resolve) => setTimeout(resolve, ms));
-}
+};
