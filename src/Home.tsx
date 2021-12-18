@@ -154,7 +154,7 @@ const Home = (props: HomeProps) => {
               tx,
               props.txTimeout,
               props.connection,
-              "singleGossip",
+              "processed",
               false
             )
           )
