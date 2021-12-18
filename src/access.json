@@ -1,11 +1,11 @@
 [
     {
-        "start": "10:00:00 2021-12-17 UTC",
+        "start": "17 Dec, 2021 10:00:00 UTC",
         "wallets": ["GSdXEdfvqJh2tCtdQbBZinHPHLHC1sVZJGhGqzZGH1AH"]
     },
     {
-        "start": "15:08:00 2021-12-18 UTC",
-        "end": "15:08:00 2021-12-19 UTC",
+        "start": "18 Dec 2021 15:08:00 UTC",
+        "end": "19 Dec 2021 15:08:00 UTC",
         "wallets": [
             "2FSQKNqJVEWL4xduHjUT6b7nKaBHqqPr9jBZFU9qB8D6",
             "2K2LZvPTkrdCNvMDg7kuafABSQZErEereUHabSeBhv4C",
@@ -170,8 +170,8 @@
         ]
     },
     {
-        "start": "03:08:00 2021-12-18 UTC",
-        "end": "15:08:00 2021-12-19 UTC",
+        "start": "19 Dec 2021 03:08:00 UTC",
+        "end": "19 Dec 2021 15:08:00 UTC",
         "wallets": [
             "2XBmNv3CQ3EK58Pv5uzdTERYSZd5fuGd3cC2WXxLti1F",
             "3H2TFDuSFTUbKek5w96BNZ84gPvsHwrNvodphxHdrn9v",
@@ -254,7 +254,7 @@
         ]
     },
     {
-        "start": "15:08:00 2021-12-19 UTC",
+        "start": "19 Dec 2021 15:08:00 UTC",
         "wallets": null
     }
 ]
