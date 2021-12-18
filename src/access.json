@@ -1,9 +1,7 @@
 [
     {
         "start": "10:00:00 2021-12-17 UTC",
-        "wallets": [
-            "GSdXEdfvqJh2tCtdQbBZinHPHLHC1sVZJGhGqzZGH1AH"
-        ]
+        "wallets": ["GSdXEdfvqJh2tCtdQbBZinHPHLHC1sVZJGhGqzZGH1AH"]
     },
     {
         "start": "15:08:00 2021-12-18 UTC",
@@ -148,7 +146,24 @@
             "fLcR1y96AD1R8wVC2nbemSM7psRuxMzLh4piQUCcUbM",
             "tdwCJ9wFjE9oG8UotPbuoa6eJXBRoHcaNtR1dg6yBV5",
             "6915cbeACW2ddjHzCR1ne1s2xXgRs9MZfK57BE7xoJTT",
-            "5Gp2w89w3yevH4hF7p1viie2hehAyGZFsZrqhDW3iyvs"
+            "5Gp2w89w3yevH4hF7p1viie2hehAyGZFsZrqhDW3iyvs",
+
+            "2pp923qmzWzZsxK6Dor83THuG5wGcRcjzyAXLwAWTp9Y",
+            "3cKoMmTgFcSSi9u1DMzTZByDVtX26XbEn4TB98Q1JKVE",
+            "6E6rbPiHKx1yof3KjpifR3YVw1BJ444zPGxoB9xsEVpr",
+            "6RaASALoLGyfa6DgELodgqoco75GUgQbUw8Sygxi5WvP",
+            "8QMabBUfo6C7K7dsDpuoEZ4FrLC4EuB9rxK57JGMhyox",
+            "9GvygpTLY8uYASVgC6zq8vtJPxVtL4CvYcZ53nFArneS",
+            "9TYv3xCRtMssnWMY3y1fBXdC2t44pgdeq2Ac4EHtrFCy",
+            "34uccmxPPuLh7z5JpumnCZJeUsExrmoAmWugfdGZ6iLe",
+            "BSbp6SBJob8DtpPvfHyrhFiSv6PmG1e7BPPD5JcEGgGC",
+            "CxzCL1GWsrCLaPmm7cfUgpGPRHk414Gx8ekaS9FGu38e",
+            "DmVYjKajo6FjbCdSifXYun2UrAAUhCDLnyXMMfsRCLhy",
+            "FtLmouEGMkoyJYnWHSnpXMRXAkGVHmXNUeeaeVefrrjL",
+            "G74tMm9Vk4MrcpdMWhWJNFGPipPLiWCX1UKnTZ1Lgpde",
+            "HfZyGTMWnxjMsqYWoJJFNkHWvRYocFht2yQnLbtfNQ2F",
+            "HxASXETxTRbdMQz5NndKhZyNjhkuVSeUeWtE5v4xRzHh",
+            "J3iARzmJivbWFE9Mo3EKmwE2zvPhR7MD9yLgjBtCcekA"
         ]
     },
     {
@@ -183,7 +198,6 @@
             "9JkLCb1dwxZFyPMo7mBt2EjLxMPqZ1bCTEd7taxjpVv8",
             "9LzA4bi3hqYzJZa2tRExFHJMQ15okkrXR3LX9T7ApNJs",
             "9RoyLSMyCWqEKePCRJFaYW6gFUCzrFJZpmHRPm8Z4rss",
-            "9TYv3xCRtMssnWMY3y1fBXdC2t44pgdeq2Ac4EHtrFCy",
             "9cvFtYajAfSp6e2A8T35foxjucUVv1NfKqXtTqcPkoXU",
             "9iMZPRNRdD5xkCujpZL78BEQyYFT9rTHVWrFRdKBM6aZ",
             "9sL4YFpDzAmXfFLNe1BSn1ukkUnXmhoXDhL7V6Rve7Kj",
@@ -228,7 +242,6 @@
             "HS11HN2iuUggfWwZewUUCaCKTdFhpRit9fKWjqJdDTYC",
             "HmdjR7AKsqoQELxeLfsT3tXUnBVx4QptcfVpA1HgQydn",
             "HraD5Fyw2TX36fVyifnaUgwHyHzYGeQVKhchVeYDruWH",
-            "HxASXETxTRbdMQz5NndKhZyNjhkuVSeUeWtE5v4xRzHh",
             "RXpja956YXaeQjK4WMePZNyw1Y3eCn8YXzhtPKj6pRg",
             "WMYefxihUzd2Kd6MRYcFuS6PUTutYwf7MgFKYRygsL4",
             "X6svmqY5MURUq6R71eZB1f8gVho7LEMcmW2WkfrSJtD",
