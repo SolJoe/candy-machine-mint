@@ -87,6 +87,7 @@ const Home = (props: HomeProps) => {
   const [itemsRedeemed, setItemsRedeemed] = useState(0);
   const [itemsRemaining, setItemsRemaining] = useState(0);
   const [mintQuantity, setMintQuantity] = useState(1);
+  const [mintPrice, setMintPrice] = useState("0.375");
 
   const [alertState, setAlertState] = useState<AlertState>({
     open: false,
@@ -182,9 +183,9 @@ const Home = (props: HomeProps) => {
     } catch (error: any) {
       // TODO: blech:
       console.log(error);
-      let message = error.msg || "Timed out! Please check your wallet before trying again!";
+      let message =
+        error.msg || "Timed out! Please check your wallet before trying again!";
       let code = error?.err?.InstructionError[1]?.Custom;
-      console.log({code})
       if (code === 0x137) message = `SOLD OUT!`;
       else if (code === 0x135)
         message = `Insufficient funds to mint. Please fund your wallet.`;
@@ -232,6 +233,19 @@ const Home = (props: HomeProps) => {
         <p>Wallet {shortenAddress(wallet.publicKey.toBase58() || "")}</p>
       )}
 
+      {wallet && <p>Mint: {mintPrice} SOL</p>}
+      {wallet && (
+        <p>
+          Increasing to 0.5 SOL in{" "}
+          <Countdown
+            date={new Date("19 Dec 2021 15:08:00 UTC")}
+            onMount={({ completed }) => completed && setMintPrice("0.5")}
+            onComplete={() => setMintPrice("0.5")}
+            renderer={renderCounter}
+          />
+        </p>
+      )}
+
       {wallet && <p>Balance: {(balance || 0).toLocaleString()} SOL</p>}
 
       {wallet && <p>Total Available: {itemsAvailable}</p>}
@@ -244,7 +258,11 @@ const Home = (props: HomeProps) => {
         {!wallet && (
           <div style={{ marginBottom: "2rem" }}>
             <img
-              style={{ width: "24rem", height: "24rem", borderRadius: "1.5rem" }}
+              style={{
+                width: "24rem",
+                height: "24rem",
+                borderRadius: "1.5rem",
+              }}
               src="./slideshow.gif"
               alt="SolGhosts slideshow gif"
             />
